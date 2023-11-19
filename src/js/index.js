@@ -23,12 +23,11 @@ addTasktoProject(project2, task3)
 
 
 storage.clear()
-storage.add(project1)
-storage.add(project2)
-storage.add(project3)
-console.log(localStorage)
+storage.addProject(project1)
+storage.addProject(project2)
+storage.addProject(project3)
+console.log(storage.getProject(project1))
 removeTaskfromProject(project1, task2)
-console.log(project1.tasks)
-console.log(localStorage)
-
+console.log(storage.getProject(project1))
+addTasktoProject(project1, task3)
 console.log(storage.getProject(project1))
