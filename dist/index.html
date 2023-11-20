@@ -1,11 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="main.js" defer></script>
     <title>Task Management</title>
 </head>
-<body>
+<body class="d-flex flex-column justify-content-between min-vh-100 min-vw-100">
+    <h1 id="header" class="py-1 px-2 m-0">To-Do List</h1>
+    <div id="body" class="flex-fill d-flex p-0">
+        <div id="sidepanel" class="align-self-stretch px-2">
+            <div class="default-projects container-fluid my-5">
+                <div id="inbox" class="default-project-name mb-2">Inbox</div>
+                <div id="today" class="default-project-name mb-2">Today</div>
+                <div id="next-7-days" class="default-project-name mb-2">Next 7 Days</div>
+            </div>
+            <div class="container-fluid">
+                <h3>Projects</h3>
+                <div id="addProject">Add Project</div>
+            </div>
+        </div>
+        <div id="taskpage" class="align-self-stretch flex-fill"></div>
+    </div>
+    <div id="footer" class="text-center p-1">Copyright © 2023 hackerover90 </div>
 </body>
 </html>

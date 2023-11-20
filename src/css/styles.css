@@ -3,3 +3,31 @@
 body {
     min-height: 100vh;
 }
+
+#header {
+    background-color: rgba(255, 255, 255, 0.1)
+}
+
+#sidepanel {
+    background-color: rgba(69, 69, 69, 0.3);
+    min-width: 15.5rem;
+}
+
+.default-project-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.default-project-name:hover {
+    background-color: rgba(69, 69, 69, 0.8);
+    cursor: pointer;
+}
+
+#addProject {
+    font-size: 1.1rem;
+}
+
+#addProject:hover {
+    background-color: rgba(69, 69, 69, 0.8);
+    cursor: pointer;
+}
