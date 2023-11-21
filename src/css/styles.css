@@ -27,7 +27,36 @@ body {
     font-size: 1.1rem;
 }
 
+
+#addTask {
+    font-size: 1rem;
+}
+
 #addProject:hover {
+    background-color: rgba(69, 69, 69, 0.8);
+    cursor: pointer;
+}
+
+#addTask:hover {
+    background-color: rgba(69, 69, 69, 0.3);
+    cursor: pointer;
+}
+
+.projectFolder {
+    font-size: 1.1rem;
+}
+
+.projectFolder:hover {
+    background-color: rgba(69, 69, 69, 0.8);
+    cursor: pointer;
+}
+
+#taskButton:hover {
+    background-color: rgba(69, 69, 69, 0.3);
+    cursor: pointer;
+}
+
+#addProjectBtn:hover {
     background-color: rgba(69, 69, 69, 0.8);
     cursor: pointer;
 }
