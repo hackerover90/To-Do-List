@@ -2,7 +2,7 @@ import { Project, addTasktoProject, removeTaskfromProject } from '../projects';
 import Task from '../tasks';
 import Storage from '../storage';
 import { format } from 'date-fns'
-import 'bootstrap/dist/css/bootstrap.min.css';
+//import 'bootstrap/dist/css/bootstrap.min.css';
 
 
 function showAllProjects(storage) {
@@ -11,15 +11,6 @@ function showAllProjects(storage) {
     for (let i = 0; i < projectOrder.length; i++) {
         let project = projectOrder[i]
         addProjecttoDOM(project)
-    }
-}
-
-function showAllTasks(storage) {
-    for (let i = 0; i < storage.length(); i++) {
-        let tasks = storage.getTasks((storage.key(i)))
-        for (let j = 0; j < tasks.length; j++) {
-            console.log(tasks[j])
-        }
     }
 }
 
@@ -55,8 +46,17 @@ function showTasksforProject(storage, project) {
     addTaskButtontoDOM(project)
     let tasks = storage.getTasks(project)
     for (let j = 0; j < tasks.length; j++) {
-        addTasktoDOM(tasks[j], project)
+        addTasktoDOM(tasks[j], j)
     }
+    addProjectHeadertoDOM(project)
+}
+
+function addProjectHeadertoDOM(project) {
+    let taskPage = document.getElementById('taskpage')
+    let header = document.createElement('div')
+    header.setAttribute('id', 'projectHeader')
+    header.innerHTML = project.name
+    taskPage.prepend(header)
 }
 
 function addTaskButtontoDOM(project) {
@@ -65,7 +65,7 @@ function addTaskButtontoDOM(project) {
     let taskButton = document.createElement('div');
     if (button == null) {
         taskButton.setAttribute('id', 'taskButton');
-        taskButton.setAttribute('projectName', project);
+        taskButton.setAttribute('projectName', project.name);
         taskButton.setAttribute('data-bs-toggle', 'modal')
         taskButton.setAttribute('data-bs-target', '#taskModal')
         taskButton.classList.add('m-2', 'px-2', 'py-1', 'text-center');
@@ -75,7 +75,7 @@ function addTaskButtontoDOM(project) {
     
 }
 
-function addTasktoDOM (task, projectName) {
+function addTasktoDOM (task, j) {
     //collapsible card, card shows checkbox, task name, date, edit logo, delete logo
     //data-attribute with task index in project array
     /*<div class="border-bottom border-secondary pb-2 d-flex justify-content-between">
@@ -90,21 +90,28 @@ function addTasktoDOM (task, projectName) {
                     </div>
                 </div>
                 */
+    //create task block
     let taskpageTasks = document.getElementById('tasks')
     let container = document.createElement('div')
-    container.classList.add('border-bottom', 'border-secondary', 'pb-2', 'd-flex', 'justify-content-between')
+    container.classList.add('task', 'border-bottom', 'border-secondary', 'pb-2', 'd-flex', 'justify-content-between', 'flex-wrap')
     let taskContainer = document.createElement('div')
+    taskContainer.classList.add('d-flex')
     let form = document.createElement('div')
     form.classList.add('form-check')
     let formInput = document.createElement('input')
     formInput.classList.add('form-check-input')
     formInput.setAttribute('type', 'checkbox')
-    formInput.setAttribute('id', 'taskDone')
+    formInput.setAttribute('id', ('taskDone'+j))
     let taskName = document.createElement('div')
-    taskName.setAttribute('id', 'taskName')
-    taskName.innerHTML = task.name 
+    taskName.classList.add('taskName')
+    taskName.innerHTML = task.name
+    taskName.setAttribute('data-bs-toggle', 'collapse')
+    let taskCollapseId = '#taskId'+j
+    taskName.setAttribute('data-bs-target', taskCollapseId)
+    taskName.setAttribute('daria-expanded', 'false')
+    taskName.setAttribute('aria-controls', ('taskId'+j)) 
     let iconContainer = document.createElement('div')
-    iconContainer.classList.add('d-flex', 'justify-content-between')
+    iconContainer.classList.add('d-flex', 'justify-content-between', 'align-items-center', 'gap-3')
     let date = document.createElement('div')
     date.innerHTML = task.date
     let edit = document.createElement('button')
@@ -114,7 +121,24 @@ function addTasktoDOM (task, projectName) {
     form.append(formInput)
     taskContainer.append(form, taskName)
     iconContainer.append(date, edit, deleteTask)
-    taskpageTasks.append(taskContainer, iconContainer)
+    container.append(taskContainer, iconContainer)
+    taskpageTasks.append(container)
+
+    //create dropdown card
+    let card = document.createElement('div')
+    card.classList.add('collapse')
+    card.setAttribute('id', ('taskId'+j))
+    let cardBody = document.createElement('div')
+    cardBody.classList.add('card', 'card-body')
+    let description = document.createElement('div')
+    description.innerHTML = 'Description: '+ task.description
+    let priority = document.createElement('div')
+    priority.innerHTML = 'Priority: '+ task.priority
+    cardBody.append(description, priority)
+    card.append(cardBody)
+    taskpageTasks.append(card)
+    let breaks = document.createElement('br')
+    taskpageTasks.append(breaks)
 }
 
 function addProjecttoDOM(project) {
@@ -145,6 +169,7 @@ function clearTasksfromDOM() {
     let taskpage = document.getElementById('taskpage')
     let taskpageTasks = document.getElementById('tasks')
     let taskButton = document.getElementById('taskButton')
+    let projectHeader = document.getElementById('projectHeader')
     if (taskpageTasks != null) {
         taskpage.removeChild(taskpageTasks)
         taskpageTasks = document.createElement('div')
@@ -158,6 +183,10 @@ function clearTasksfromDOM() {
         taskpage.prepend(taskpageTasks) 
     }
     if (taskButton != null) {taskpage.removeChild(taskButton)} //check if element exists in DOM
+    if (projectHeader != null) {
+        taskpage.removeChild(projectHeader)
+        console.log(projectHeader)
+    }
 }
 
 function editTask() {
@@ -173,6 +202,7 @@ function editProject() {
 }
 
 function deleteProject(projectFolder) {
+    clearTasksfromDOM()
     let projectInnerContainer = document.getElementById('projectInnerContainer') 
     let projectFolders = projectFolder
     projectInnerContainer.removeChild(projectFolders)
@@ -180,7 +210,6 @@ function deleteProject(projectFolder) {
 
 export { 
     showAllProjects,
-    showAllTasks, 
     showTasksforToday, 
     showTasksforNext7Days,
     showTasksforProject,

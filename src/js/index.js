@@ -1,5 +1,6 @@
-import '../css/styles.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
+import '../css/styles.css'
+
 // Import our custom CSS
 //import '../scss/styles.scss'
 
@@ -16,7 +17,7 @@ let storage = new Storage()
 //storage.clear()
 sidebar.showAllProjects(storage)
 
-let projectForm = document.getElementById('projectForm')
+//let projectForm = document.getElementById('projectForm')
 
 document.getElementById('projectSubmit').addEventListener('click', (e) => {
     e.preventDefault()
@@ -24,6 +25,7 @@ document.getElementById('projectSubmit').addEventListener('click', (e) => {
     if (storage.getProject(projectName)) {alert('This project already exists'); return}
     let project = new Project(projectName)
     storage.addProject(project)
+    storage.updateProjectOrder(project)
     sidebar.showAllProjects(storage)
     location.reload();
 })
@@ -32,8 +34,7 @@ document.getElementById('taskSubmit').addEventListener('click', (e) => {
     e.preventDefault()
     let taskButton = document.getElementById('taskButton')
     let projectName = taskButton.getAttribute('projectname')
-    let taskName = document.getElementById('taskName').value
-    console.log(taskName)
+    let taskName = document.getElementById('task-name').value
     let taskPriority = document.getElementById('priority').value
     let taskDate = document.getElementById('date').value
     if (taskDate == '') {alert('Not a valid date'); return}
@@ -45,6 +46,10 @@ document.getElementById('taskSubmit').addEventListener('click', (e) => {
     let currentProject = storage.getProject(projectName)
     addTasktoProject(currentProject, task)
     sidebar.showTasksforProject(storage, currentProject)
+
+    
+    let form = document.getElementById('taskForm')
+    form.reset()
 })
 
 let projects = document.getElementsByClassName('projectFolder')
@@ -52,16 +57,24 @@ let projects = document.getElementsByClassName('projectFolder')
 for (let project of projects) {
     let deleteButton = project.lastChild
     project.addEventListener('click', (e) => {
+        for (let project of projects) {
+            project.style.background = ''
+        }
         if (e.target == deleteButton) {
             let projectName = project.firstChild.innerText
             sidebar.deleteProject(project)
             storage.remove(projectName)
         } else {
-            sidebar.showTasksforProject(storage, e.currentTarget.firstChild.innerText)
+            let projectName = e.currentTarget.firstChild.innerText
+            let currentProject = storage.getProject(projectName)
+            let g  = e.currentTarget
+            g.style.background = 'rgba(69, 69, 69, 0.8)'
+            sidebar.showTasksforProject(storage, currentProject)
         }
     })
 }
 
+/*
 let taskPage = document.getElementById('taskpage')
 
 taskPage.addEventListener('click', (e) => {
@@ -71,3 +84,4 @@ taskPage.addEventListener('click', (e) => {
         let projectName = e.target.getAttribute('projectName')
     }
 })
+*/

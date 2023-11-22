@@ -18,7 +18,7 @@ class Storage {
         localStorage.setItem('', JSON.stringify(newOrderArr))
     }
     addProject(project) {
-        this.updateProjectOrder(project)
+        //this.updateProjectOrder(project)
         return localStorage.setItem(project.name, JSON.stringify(project))
     }
     remove(project) { //takes name of project and removes it from local storage and the array that holds local storage order

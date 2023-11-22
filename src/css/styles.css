@@ -44,6 +44,7 @@ body {
 
 .projectFolder {
     font-size: 1.1rem;
+    background-color: rgba(69, 69, 69, 0);
 }
 
 .projectFolder:hover {
@@ -59,4 +60,20 @@ body {
 #addProjectBtn:hover {
     background-color: rgba(69, 69, 69, 0.8);
     cursor: pointer;
+}
+
+.task:hover {
+    background-color: rgba(69, 69, 69, 0.3);
+}
+
+.taskName:hover {
+    cursor: pointer;
+}
+
+#projectHeader {
+    font-size: 3rem;
+    padding-left: 1rem;
+    text-align: start;
+    text-decoration: underline;
+
 }
