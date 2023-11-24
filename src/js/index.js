@@ -17,8 +17,6 @@ let storage = new Storage()
 //storage.clear()
 sidebar.showAllProjects(storage)
 
-//let projectForm = document.getElementById('projectForm')
-
 document.getElementById('projectSubmit').addEventListener('click', (e) => {
     e.preventDefault()
     let projectName = document.getElementById('projectName').value
@@ -57,11 +55,36 @@ document.getElementById('taskSubmit').addEventListener('click', (e) => {
     form.reset()
 })
 
+let defaultProjects = document.getElementsByClassName('default-project-name')
+let inbox = defaultProjects[0]
+let today = defaultProjects[1]
+let week = defaultProjects[2]
+for (let project of defaultProjects) {
+    project.addEventListener('click', (e) => {
+        for (let project of defaultProjects) {
+            project.style.background = ''
+        }
+        if (e.target == inbox) {
+            sidebar.showAllTasks(storage)
+            e.target.style.background = 'rgba(69, 69, 69, 0.8)'
+        } else if (e.target == today) {
+            sidebar.showTasksforToday(storage)
+            e.target.style.background = 'rgba(69, 69, 69, 0.8)'
+        } else if (e.target == week) {
+            sidebar.showTasksforNext7Days(storage)
+            e.target.style.background = 'rgba(69, 69, 69, 0.8)'
+        }
+    })
+}
+
 let projects = document.getElementsByClassName('projectFolder')
 for (let project of projects) {
     let deleteButton = project.lastChild
     project.addEventListener('click', (e) => {
         for (let project of projects) {
+            project.style.background = ''
+        }
+        for (let project of defaultProjects) {
             project.style.background = ''
         }
         if (e.target == deleteButton) {
@@ -138,18 +161,3 @@ document.getElementById('taskpage').addEventListener('click', (e) => {
 })
 
 
-let defaultProjects = document.getElementsByClassName('default-project-name')
-let inbox = defaultProjects[0]
-let today = defaultProjects[1]
-let week = defaultProjects[2]
-for (let project of defaultProjects) {
-    project.addEventListener('click', (e) => {
-        if (e.target == inbox) {
-            sidebar.showAllTasks(storage)
-        } else if (e.target == today) {
-            sidebar.showTasksforToday(storage)
-        } else if (e.target == week) {
-            sidebar.showTasksforNext7Days(storage)
-        }
-    })
-}
