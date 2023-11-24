@@ -1,6 +1,6 @@
-import { Project, addTasktoProject, removeTaskfromProject } from '../projects';
-import Task from '../tasks';
-import Storage from '../storage';
+import { Project, addTasktoProject, removeTaskfromProject } from './projects';
+import Task from './tasks';
+import Storage from './storage';
 import { format } from 'date-fns'
 //import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -231,10 +231,6 @@ function deleteTask(taskFolder) {
     taskContainer.removeChild(taskFolder) //removes container holding task
 }
 
-function editProject() {
-//NOT DOM
-}
-
 function deleteProject(projectFolder) {
     clearTasksfromDOM()
     let projectInnerContainer = document.getElementById('projectInnerContainer') 
@@ -253,10 +249,6 @@ function editModal(task) {
     let description = document.getElementById('edit-description')
     description.innerHTML = task.description
 }
-
-//editTask(taskName, priority, date, description) {
-    //storage.getTask()
-//}
 
 export { 
     showAllProjects,

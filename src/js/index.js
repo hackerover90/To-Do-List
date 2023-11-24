@@ -10,12 +10,12 @@ import { format } from 'date-fns'
 import { Project, addTasktoProject, removeTaskfromProject } from './projects';
 import Task from './tasks';
 import Storage from './storage';
-import * as sidebar from './DOM/sidebar'
+import * as dom from './DOM'
 
 
 let storage = new Storage()
 //storage.clear()
-sidebar.showAllProjects(storage)
+dom.showAllProjects(storage)
 
 document.getElementById('projectSubmit').addEventListener('click', (e) => {
     e.preventDefault()
@@ -25,7 +25,7 @@ document.getElementById('projectSubmit').addEventListener('click', (e) => {
     let project = new Project(projectName)
     storage.addProject(project)
     storage.updateProjectOrder(project)
-    sidebar.showAllProjects(storage)
+    dom.showAllProjects(storage)
     location.reload();
 })
 
@@ -48,7 +48,7 @@ document.getElementById('taskSubmit').addEventListener('click', (e) => {
     let task = new Task(taskName, taskPriority, taskDate, taskDescription)
     let currentProject = storage.getProject(projectName)
     addTasktoProject(currentProject, task)
-    sidebar.showTasksforProject(storage, currentProject)
+    dom.showTasksforProject(storage, currentProject)
 
     
     let form = document.getElementById('taskForm')
@@ -56,28 +56,32 @@ document.getElementById('taskSubmit').addEventListener('click', (e) => {
 })
 
 let defaultProjects = document.getElementsByClassName('default-project-name')
+let projects = document.getElementsByClassName('projectFolder')
 let inbox = defaultProjects[0]
 let today = defaultProjects[1]
 let week = defaultProjects[2]
 for (let project of defaultProjects) {
     project.addEventListener('click', (e) => {
+        for (let project of projects) {
+            project.style.background = ''
+        }
         for (let project of defaultProjects) {
             project.style.background = ''
         }
         if (e.target == inbox) {
-            sidebar.showAllTasks(storage)
+            dom.showAllTasks(storage)
             e.target.style.background = 'rgba(69, 69, 69, 0.8)'
         } else if (e.target == today) {
-            sidebar.showTasksforToday(storage)
+            dom.showTasksforToday(storage)
             e.target.style.background = 'rgba(69, 69, 69, 0.8)'
         } else if (e.target == week) {
-            sidebar.showTasksforNext7Days(storage)
+            dom.showTasksforNext7Days(storage)
             e.target.style.background = 'rgba(69, 69, 69, 0.8)'
         }
     })
 }
 
-let projects = document.getElementsByClassName('projectFolder')
+
 for (let project of projects) {
     let deleteButton = project.lastChild
     project.addEventListener('click', (e) => {
@@ -89,14 +93,14 @@ for (let project of projects) {
         }
         if (e.target == deleteButton) {
             let projectName = project.firstChild.innerText
-            sidebar.deleteProject(project)
+            dom.deleteProject(project)
             storage.remove(projectName)
         } else {
             let projectName = e.currentTarget.firstChild.innerText
             let currentProject = storage.getProject(projectName)
             let g  = e.currentTarget
             g.style.background = 'rgba(69, 69, 69, 0.8)'
-            sidebar.showTasksforProject(storage, currentProject)
+            dom.showTasksforProject(storage, currentProject)
         }
     })
 }
@@ -112,7 +116,7 @@ document.getElementById('taskpage').addEventListener('click', (e) => {
             let projectName = e.target.getAttribute('projectName')
             let taskName = e.target.getAttribute('taskName')
             let task = storage.getTask(projectName, taskName)
-            sidebar.editModal(task)
+            dom.editModal(task)
             document.getElementById("editTaskSubmit").addEventListener('click', (e) => {
                 e.preventDefault()
                 let newTaskName = document.getElementById('edit-task-name').value
@@ -123,11 +127,11 @@ document.getElementById('taskpage').addEventListener('click', (e) => {
                 newTaskDate.setDate(newTaskDate.getDate() + 1)
                 newTaskDate = format(newTaskDate, 'yyyy/MM/dd')
                 let newTaskDescription = document.getElementById('edit-description').value
-                //sidebar.editTask(taskName, taskPriority, taskDate, taskDescription)
+                //dom.editTask(taskName, taskPriority, taskDate, taskDescription)
                 storage.editTask(projectName, taskName, newTaskName, newTaskPriority, newTaskDate, newTaskDescription)
                 let currentProject = storage.getProject(projectName)
                 //addTasktoProject(currentProject, task)
-                sidebar.showTasksforProject(storage, currentProject)
+                dom.showTasksforProject(storage, currentProject)
             
                 
                 let form = document.getElementById('editTaskForm')
@@ -141,7 +145,7 @@ document.getElementById('taskpage').addEventListener('click', (e) => {
             let taskName = e.target.getAttribute('taskName')
             let taskFolder = button.parentElement.parentElement
             storage.removeTask(projectName, taskName)
-            sidebar.deleteTask(taskFolder)
+            dom.deleteTask(taskFolder)
         }
     }
     for (let i=0; i<checkboxes.length; i++) {
