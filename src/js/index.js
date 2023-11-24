@@ -84,6 +84,7 @@ for (let project of defaultProjects) {
 
 for (let project of projects) {
     let deleteButton = project.lastChild
+    deleteButton.style.display = 'none'
     project.addEventListener('click', (e) => {
         for (let project of projects) {
             project.style.background = ''
@@ -102,6 +103,13 @@ for (let project of projects) {
             g.style.background = 'rgba(69, 69, 69, 0.8)'
             dom.showTasksforProject(storage, currentProject)
         }
+    })
+    
+    project.addEventListener('mouseenter', (e) => {
+        deleteButton.style.display = 'block'
+    })
+    project.addEventListener('mouseleave', (e) => {
+        deleteButton.style.display = 'none'
     })
 }
 
