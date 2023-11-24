@@ -22,6 +22,7 @@ sidebar.showAllProjects(storage)
 document.getElementById('projectSubmit').addEventListener('click', (e) => {
     e.preventDefault()
     let projectName = document.getElementById('projectName').value
+    if (projectName == '') {alert('Project must have a name'); return}
     if (storage.getProject(projectName)) {alert('This project already exists'); return}
     let project = new Project(projectName)
     storage.addProject(project)
@@ -35,6 +36,10 @@ document.getElementById('taskSubmit').addEventListener('click', (e) => {
     let taskButton = document.getElementById('taskButton')
     let projectName = taskButton.getAttribute('projectname')
     let taskName = document.getElementById('task-name').value
+    if (storage.taskExists(projectName, taskName) == true) {
+        alert('Task already exists in this project')
+        return
+    }
     let taskPriority = document.getElementById('priority').value
     let taskDate = document.getElementById('date').value
     if (taskDate == '') {alert('Not a valid date'); return}
@@ -53,7 +58,6 @@ document.getElementById('taskSubmit').addEventListener('click', (e) => {
 })
 
 let projects = document.getElementsByClassName('projectFolder')
-
 for (let project of projects) {
     let deleteButton = project.lastChild
     project.addEventListener('click', (e) => {
@@ -74,14 +78,78 @@ for (let project of projects) {
     })
 }
 
-/*
-let taskPage = document.getElementById('taskpage')
 
-taskPage.addEventListener('click', (e) => {
+document.getElementById('taskpage').addEventListener('click', (e) => {
     let taskContainer = document.getElementById('tasks')
-    let taskButton = document.getElementById('taskButton')
-    if (e.target == taskButton) {
-        let projectName = e.target.getAttribute('projectName')
+    let editButtons = document.getElementsByClassName('editTask')
+    let deleteButtons = document.getElementsByClassName('deleteTask')
+    let checkboxes = document.querySelectorAll('input[type=checkbox]')
+    for (let button of editButtons) {
+        if (e.target == button) {
+            let projectName = e.target.getAttribute('projectName')
+            let taskName = e.target.getAttribute('taskName')
+            let task = storage.getTask(projectName, taskName)
+            sidebar.editModal(task)
+            document.getElementById("editTaskSubmit").addEventListener('click', (e) => {
+                e.preventDefault()
+                let newTaskName = document.getElementById('edit-task-name').value
+                let newTaskPriority = document.getElementById('edit-priority').value
+                let newTaskDate = document.getElementById('edit-date').value
+                if (newTaskDate == '') {alert('Not a valid date'); return}
+                newTaskDate = new Date(newTaskDate)
+                newTaskDate.setDate(newTaskDate.getDate() + 1)
+                newTaskDate = format(newTaskDate, 'yyyy/MM/dd')
+                let newTaskDescription = document.getElementById('edit-description').value
+                //sidebar.editTask(taskName, taskPriority, taskDate, taskDescription)
+                storage.editTask(projectName, taskName, newTaskName, newTaskPriority, newTaskDate, newTaskDescription)
+                let currentProject = storage.getProject(projectName)
+                //addTasktoProject(currentProject, task)
+                sidebar.showTasksforProject(storage, currentProject)
+            
+                
+                let form = document.getElementById('editTaskForm')
+                form.reset()
+            })
+        }
+    }
+    for (let button of deleteButtons) {
+        if (e.target == button) {
+            let projectName = e.target.getAttribute('projectName')
+            let taskName = e.target.getAttribute('taskName')
+            let taskFolder = button.parentElement.parentElement
+            storage.removeTask(projectName, taskName)
+            sidebar.deleteTask(taskFolder)
+        }
+    }
+    for (let i=0; i<checkboxes.length; i++) {
+        checkboxes[i].addEventListener('change', (e) => {
+            let task = checkboxes[i].parentElement.parentElement.parentElement
+            let taskName = task.firstChild.lastChild
+            let taskDate = task.lastChild.firstChild
+            if (checkboxes[i].checked == false) {
+                taskName.style.setProperty('text-decoration', 'none')
+                taskDate.style.setProperty('text-decoration', 'none')
+            } else {
+                taskName.style.setProperty('text-decoration', 'line-through')
+                taskDate.style.setProperty('text-decoration', 'line-through')
+            }
+        })
     }
 })
-*/
+
+
+let defaultProjects = document.getElementsByClassName('default-project-name')
+let inbox = defaultProjects[0]
+let today = defaultProjects[1]
+let week = defaultProjects[2]
+for (let project of defaultProjects) {
+    project.addEventListener('click', (e) => {
+        if (e.target == inbox) {
+            sidebar.showAllTasks(storage)
+        } else if (e.target == today) {
+            sidebar.showTasksforToday(storage)
+        } else if (e.target == week) {
+            sidebar.showTasksforNext7Days(storage)
+        }
+    })
+}

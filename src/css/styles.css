@@ -52,7 +52,12 @@ body {
     cursor: pointer;
 }
 
-#taskButton:hover {
+#taskButtonText {
+    width: max-content;
+    padding: 0.5rem;
+}
+
+#taskButtonText:hover {
     background-color: rgba(69, 69, 69, 0.3);
     cursor: pointer;
 }
@@ -74,6 +79,5 @@ body {
     font-size: 3rem;
     padding-left: 1rem;
     text-align: start;
-    text-decoration: underline;
 
 }

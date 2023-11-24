@@ -14,28 +14,52 @@ function showAllProjects(storage) {
     }
 }
 
+function showAllTasks(storage) {
+    clearTasksfromDOM()
+    let projectOrder = storage.getProjectOrder()
+    for (let i = 0; i < projectOrder.length; i++) {
+        let tasks = storage.getTasks(projectOrder[i])
+        let project = storage.getProject(projectOrder[i])
+        for (let j=0; j<tasks.length; j++) {
+            let iconContainer = addTasktoDOM(tasks[j], j, project)
+            iconContainer.removeChild(iconContainer.lastChild)
+            iconContainer.removeChild(iconContainer.lastChild)
+        }
+    }
+}
+
 function showTasksforToday(storage) {
-    for (let i = 0; i < storage.length(); i++) {
-        let tasks = storage.getTasks((storage.key(i)))
+    clearTasksfromDOM()
+    let projectOrder = storage.getProjectOrder()
+    for (let i = 0; i < projectOrder.length; i++) {
+        let tasks = storage.getTasks(projectOrder[i])
+        let project = storage.getProject(projectOrder[i])
+        let today = format(new Date, 'yyyy/MM/dd')
         for (let j = 0; j < tasks.length; j++) {
-            let today = format(new Date, 'yyyy/MM/dd')
             if (tasks[j].date == today) {
-                console.log(tasks[j])
+                let iconContainer = addTasktoDOM(tasks[j], j, project)
+                iconContainer.removeChild(iconContainer.lastChild)
+                iconContainer.removeChild(iconContainer.lastChild)
             }
         }
     }
 }
 
 function showTasksforNext7Days(storage) {
-    for (let i = 0; i < storage.length(); i++) {
-        let tasks = storage.getTasks((storage.key(i)))
+    clearTasksfromDOM()
+    let projectOrder = storage.getProjectOrder()
+    for (let i = 0; i < projectOrder.length; i++) {
+        let tasks = storage.getTasks(projectOrder[i])
+        let project = storage.getProject(projectOrder[i])
+        let today = format(new Date, 'yyyy/MM/dd')
+        let next7days = new Date
+        next7days.setDate(next7days.getDate() + 7)
+        next7days = format(next7days, 'yyyy/MM/dd')
         for (let j = 0; j < tasks.length; j++) {
-            let next7days = new Date
-            next7days.setDate(next7days.getDate() + 7)
-            next7days = format(next7days, 'yyyy/MM/dd')
-            console.log(tasks[j].date, next7days)
-            if (tasks[j].date < next7days) {
-                console.log(tasks[j])
+            if (tasks[j].date <= next7days && tasks[j].date >= today) {
+                let iconContainer = addTasktoDOM(tasks[j], j, project)
+                iconContainer.removeChild(iconContainer.lastChild)
+                iconContainer.removeChild(iconContainer.lastChild)
             }
         }
     }
@@ -46,7 +70,7 @@ function showTasksforProject(storage, project) {
     addTaskButtontoDOM(project)
     let tasks = storage.getTasks(project)
     for (let j = 0; j < tasks.length; j++) {
-        addTasktoDOM(tasks[j], j)
+        addTasktoDOM(tasks[j], j, project)
     }
     addProjectHeadertoDOM(project)
 }
@@ -63,19 +87,22 @@ function addTaskButtontoDOM(project) {
     let button = document.getElementById('taskButton')
     let taskPage = document.getElementById('taskpage');
     let taskButton = document.createElement('div');
+    let text = document.createElement('div')
+    taskButton.classList.add('container', 'd-flex', 'justify-content-center')
     if (button == null) {
         taskButton.setAttribute('id', 'taskButton');
         taskButton.setAttribute('projectName', project.name);
         taskButton.setAttribute('data-bs-toggle', 'modal')
         taskButton.setAttribute('data-bs-target', '#taskModal')
-        taskButton.classList.add('m-2', 'px-2', 'py-1', 'text-center');
-        taskButton.innerHTML = 'Add Task';
-        taskPage.append(taskButton)
+        taskButton.classList.add('px-3', 'py-1', 'text-center');
+        text.innerHTML = 'Add Task';
+        text.setAttribute('id', 'taskButtonText')
+        taskPage.appendChild(taskButton).appendChild(text)
     }
     
 }
 
-function addTasktoDOM (task, j) {
+function addTasktoDOM (task, j, project) {
     //collapsible card, card shows checkbox, task name, date, edit logo, delete logo
     //data-attribute with task index in project array
     /*<div class="border-bottom border-secondary pb-2 d-flex justify-content-between">
@@ -99,7 +126,7 @@ function addTasktoDOM (task, j) {
     let form = document.createElement('div')
     form.classList.add('form-check')
     let formInput = document.createElement('input')
-    formInput.classList.add('form-check-input')
+    formInput.classList.add('done', 'form-check-input')
     formInput.setAttribute('type', 'checkbox')
     formInput.setAttribute('id', ('taskDone'+j))
     let taskName = document.createElement('div')
@@ -116,8 +143,16 @@ function addTasktoDOM (task, j) {
     date.innerHTML = task.date
     let edit = document.createElement('button')
     edit.innerHTML = 'Edit'
+    edit.classList.add('editTask')
+    edit.setAttribute('projectName', project.name)
+    edit.setAttribute('taskName', task.name)
+    edit.setAttribute('data-bs-toggle', 'modal')
+    edit.setAttribute('data-bs-target', '#editTaskModal')
     let deleteTask = document.createElement('button')
     deleteTask.innerHTML = 'Delete'
+    deleteTask.classList.add('deleteTask')
+    deleteTask.setAttribute('projectName', project.name)
+    deleteTask.setAttribute('taskName', task.name)
     form.append(formInput)
     taskContainer.append(form, taskName)
     iconContainer.append(date, edit, deleteTask)
@@ -139,6 +174,7 @@ function addTasktoDOM (task, j) {
     taskpageTasks.append(card)
     let breaks = document.createElement('br')
     taskpageTasks.append(breaks)
+    return iconContainer
 }
 
 function addProjecttoDOM(project) {
@@ -185,16 +221,14 @@ function clearTasksfromDOM() {
     if (taskButton != null) {taskpage.removeChild(taskButton)} //check if element exists in DOM
     if (projectHeader != null) {
         taskpage.removeChild(projectHeader)
-        console.log(projectHeader)
     }
 }
 
-function editTask() {
-//not DOM
-}
-
-function deleteTask() {
-
+function deleteTask(taskFolder) {
+    let taskContainer = document.getElementById('tasks')
+    taskContainer.removeChild(taskFolder.nextElementSibling.nextElementSibling) //removes <br>
+    taskContainer.removeChild(taskFolder.nextElementSibling) //removes collapsible
+    taskContainer.removeChild(taskFolder) //removes container holding task
 }
 
 function editProject() {
@@ -204,14 +238,33 @@ function editProject() {
 function deleteProject(projectFolder) {
     clearTasksfromDOM()
     let projectInnerContainer = document.getElementById('projectInnerContainer') 
-    let projectFolders = projectFolder
-    projectInnerContainer.removeChild(projectFolders)
+    projectInnerContainer.removeChild(projectFolder)
 }
+
+function editModal(task) {
+    let name = document.getElementById('edit-task-name')
+    name.setAttribute('value', task.name)
+    let priority = document.getElementById(task.priority)
+    priority.selected = true
+    let date = document.getElementById('edit-date')
+    let taskDate = new Date(task.date)
+    taskDate = format(taskDate, 'yyyy-MM-dd')
+    date.setAttribute('value', taskDate)
+    let description = document.getElementById('edit-description')
+    description.innerHTML = task.description
+}
+
+//editTask(taskName, priority, date, description) {
+    //storage.getTask()
+//}
 
 export { 
     showAllProjects,
+    showAllTasks,
     showTasksforToday, 
     showTasksforNext7Days,
     showTasksforProject,
-    deleteProject
+    deleteProject,
+    deleteTask,
+    editModal
 }
